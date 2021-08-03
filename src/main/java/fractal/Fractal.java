@@ -12,14 +12,27 @@ import static util.MyMath.RADIANS_TO_DEGREES;
 
 public class Fractal {
     public static final Vector3f DEFAULT_COLOR = new Vector3f(1.0f, 0.8f, 0.5f);
-    final List<Line> base;
+    List<Line> base;
     List<Line> lines;
     Vector3f color;
+    Fractal original;
+
+    public Fractal() {
+
+    }
 
     public Fractal(Line... lines) {
         this.base = new ArrayList<>(List.of(lines));
         this.lines = new ArrayList<>(List.of(lines));
         this.color = new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random());
+        this.original = this.copy();
+    }
+
+    public Fractal(List<Line> lines) {
+        this.base = lines;
+        this.lines = lines;
+        this.color = new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random());
+        this.original = this.copy();
     }
 
     public List<Line> getLines() {
@@ -27,8 +40,12 @@ public class Fractal {
     }
 
     public Fractal copy() {
-        Fractal f = new Fractal(this.base.toArray(new Line[0]));
-        f.lines.clear();
+        Fractal f = new Fractal();
+        f.base = new ArrayList<>();
+        f.lines = new ArrayList<>();
+        for (Line l : base) {
+            f.base.add(new Line(new Vector2f(l.getStart()), new Vector2f(l.getEnd())));
+        }
         for (Line l : lines) {
             f.lines.add(new Line(new Vector2f(l.getStart()), new Vector2f(l.getEnd())));
         }
@@ -37,7 +54,7 @@ public class Fractal {
     }
 
     public Fractal getBase() {
-        return new Fractal(this.base.toArray(new Line[0]));
+        return new Fractal(this.base);
     }
 
     public void translateTo(Vector2f pos) {
@@ -67,9 +84,9 @@ public class Fractal {
         List<Fractal> toBeAdded = new ArrayList<>();
         final int l = this.lines.size();
 
-        // Generate a bunch of smaller, translated, scaled, and rotated copies of this pseudo-fractal.
+        // Generate a bunch of smaller, translated, scaled, and rotated copies of this pseudo-fractal's base.
         for (int i = 0; i < l; i++) {
-            Fractal f = this.copy();
+            Fractal f = original.copy();
             Vector2f lStart = this.lines.get(i).getStart();
             Vector2f lEnd = this.lines.get(i).getEnd();
 
@@ -90,11 +107,22 @@ public class Fractal {
                     .normalize()
                     .dot(new Vector2f(1.0f, 0.0f));
 
-
             float theta = (float) Math.acos(num);
+
             if (lEnd.y > lStart.y) {
                 theta *= -1;
             }
+
+            float theta2 = (float) Math.acos(new Vector2f(fEnd)
+                    .sub(fStart)
+                    .normalize()
+                    .dot(new Vector2f(1.0f, 0.0f)));
+
+            if (fEnd.y > fStart.y) {
+                theta2 *= -1;
+            }
+
+            theta -= theta2;
 
             f.rotate(lStart, theta*RADIANS_TO_DEGREES);
 
@@ -107,7 +135,5 @@ public class Fractal {
         for (Fractal fractal : toBeAdded) {
             this.lines.addAll(fractal.lines);
         }
-
-        System.out.println(this.lines.size());
     }
 }

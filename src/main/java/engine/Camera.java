@@ -22,17 +22,17 @@ public class Camera {
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         this.transform = new Transform(transform);
-        setZoom(32.0f);
+        setZoom(1.0f);
         adjustProjection();
     }
 
     public void adjustProjection() {
         projectionMatrix.setOrtho(
                 // I use Math.pow here to make the zoom more natural
-                (zoom * -20.0f),
-                (zoom * 20.0f),
-                (zoom * -10.5f),
-                (zoom * 10.5f),
+                (float) (Math.pow(2, zoom) * -20.0f),
+                (float) (Math.pow(2, zoom) * 20.0f),
+                (float) (Math.pow(2, zoom) * -10.5f),
+                (float) (Math.pow(2, zoom) * 10.5f),
                 0.0f, 100.0f
         );
     }

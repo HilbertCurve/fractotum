@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static util.MyMath.rotate;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -154,7 +155,7 @@ public class Renderer {
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
             glEnableVertexAttribArray(1);
 
-            glLineWidth(1.0f);
+            glLineWidth(2.0f);
         }
 
         public static void beginFrame() {
@@ -194,6 +195,7 @@ public class Renderer {
             shader.use();
             shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
             shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
+            shader.uploadFloat("uTime", (float) (System.nanoTime()*1e-9));
 
             // Bind the vao
             glBindVertexArray(vaoID);
@@ -259,5 +261,9 @@ public class Renderer {
 
     public static Line getLine(int index) {
         return LineRenderer.lines.get(index);
+    }
+
+    public static void clearLines() {
+        LineRenderer.lines.clear();
     }
 }

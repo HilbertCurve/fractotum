@@ -1,8 +1,11 @@
 package engine;
 
+import gui.ImGuiLayer;
+import imgui.ImGui;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -14,10 +17,10 @@ public class Window {
     private int height;
     private final String title;
 
-    private long glfwWindow;
+    private static long glfwWindow;
 
     private static Window window = null;
-
+    private static final ImGuiLayer imGui = new ImGuiLayer();
     private static final Scene currentScene = new Scene();
 
     private Window() {
@@ -54,17 +57,21 @@ public class Window {
         return currentScene;
     }
 
-    public void run() {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+    public static long getPtr() {
+        return glfwWindow;
+    }
 
+    public void run() {
         init();
         loop();
 
         // Free the memory
+        imGui.dispose();
+
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
-        glfwTerminate();
         glfwSetErrorCallback(null).free();
+        glfwTerminate();
     }
 
     public void init() {
@@ -75,7 +82,6 @@ public class Window {
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW.");
         }
-
 
         // Configure GLFW
         glfwDefaultWindowHints();
@@ -114,10 +120,9 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        System.out.println("OpenGL Version: " + glGetString(GL_VERSION));
-
         Renderer.start();
         currentScene.start();
+        imGui.init(glfwWindow);
     }
 
     public void loop() {
@@ -133,11 +138,14 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT);
 
             Renderer.beginFrame();
+            imGui.newFrame();
 
             if (dt >= 0) {
                 currentScene.update(dt);
                 Renderer.draw();
             }
+
+            imGui.render();
 
             glfwSwapBuffers(glfwWindow);
 
