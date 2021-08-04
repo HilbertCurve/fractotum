@@ -46,7 +46,7 @@ public class Camera {
     }
 
     public void zoomIn(float z) {
-        zoom += z;
+        zoom -= z;
     }
 
     public Matrix4f getViewMatrix() {
@@ -67,7 +67,7 @@ public class Camera {
 
     public void update() {
         if (isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
-            this.transform.position.x += getScrollY() * this.getZoom();
+            this.transform.position.x += getScrollY() * (float) (Math.pow(2, zoom));
         } else if (isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
             float oldZoom = this.getZoom();
             this.zoomIn(getScrollY());
@@ -77,7 +77,7 @@ public class Camera {
                 this.adjustProjection();
             }
         } else {
-            this.transform.position.y += getScrollY() * this.getZoom();
+            this.transform.position.y += getScrollY() * (float) (Math.pow(2, zoom));
         }
     }
 }

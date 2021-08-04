@@ -34,7 +34,7 @@ public class ImGuiLayer {
         int iters = Window.getScene().iterations[0];
 
         // Number of fractal-ization iterations
-        if (ImGui.sliderInt("Number of Iterations", Window.getScene().iterations, 0, 12)) {
+        if (ImGui.sliderInt("Number of Iterations", Window.getScene().iterations, 0, 16)) {
             iters = Window.getScene().iterations[0];
             Window.getScene().generateFractal(iters);
         }

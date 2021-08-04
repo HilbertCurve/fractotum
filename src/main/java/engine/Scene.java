@@ -27,9 +27,6 @@ public class Scene {
 
         generateFractal(3);
 
-        for (Line l : f.getLines())
-            Renderer.addLine(l.getStart(), l.getEnd());
-
         this.camera = new Camera(new Vector2f());
 
         System.out.println("Scene started");
@@ -67,6 +64,7 @@ public class Scene {
         }
 
         f = new Fractal(lines);
+        f.getColor().set(Fractal.DEFAULT_COLOR);
 
         for (int i = 0; i < iterations; i++) {
             f.iterate();

@@ -24,14 +24,16 @@ public class Fractal {
     public Fractal(Line... lines) {
         this.base = new ArrayList<>(List.of(lines));
         this.lines = new ArrayList<>(List.of(lines));
-        this.color = new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random());
+        this.color = new Vector3f();
+        DEFAULT_COLOR.get(this.color);
         this.original = this.copy();
     }
 
     public Fractal(List<Line> lines) {
         this.base = lines;
         this.lines = lines;
-        this.color = new Vector3f((float) Math.random(), (float) Math.random(), (float) Math.random());
+        this.color = new Vector3f();
+        DEFAULT_COLOR.get(this.color);
         this.original = this.copy();
     }
 
@@ -50,11 +52,18 @@ public class Fractal {
             f.lines.add(new Line(new Vector2f(l.getStart()), new Vector2f(l.getEnd())));
         }
 
+        f.color = this.color;
+        System.out.println(this.color);
+
         return f;
     }
 
     public Fractal getBase() {
         return new Fractal(this.base);
+    }
+
+    public Vector3f getColor() {
+        return this.color;
     }
 
     public void translateTo(Vector2f pos) {
@@ -133,6 +142,9 @@ public class Fractal {
         this.lines.clear();
 
         for (Fractal fractal : toBeAdded) {
+            for (Line line : fractal.lines) {
+                line.getColor().set(this.color);
+            }
             this.lines.addAll(fractal.lines);
         }
     }

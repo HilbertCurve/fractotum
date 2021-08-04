@@ -13,6 +13,7 @@ public class Line {
     public Line(Vector2f from, Vector2f to) {
         this.from = from;
         this.to = to;
+        this.color = new Vector3f();
     }
 
     public Line(Vector2f from, Vector2f to, Vector3f color) {
