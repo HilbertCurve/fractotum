@@ -2,9 +2,9 @@ package engine;
 
 import fractal.Fractal;
 import fractal.Fractals;
+import fractal.HilbertCurve;
 import org.joml.Vector2f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Scene {
@@ -42,7 +42,9 @@ public class Scene {
     }
 
     public void generateFractal(int iterations) {
-        lines.clear();
+        Renderer.clearLines();
+
+        /*lines.clear();
 
         Renderer.clearLines();
 
@@ -64,13 +66,15 @@ public class Scene {
         }
 
         f = new Fractal(lines);
-        f.getColor().set(Fractal.DEFAULT_COLOR);
+        f.getColor().set(Fractals.DEFAULT_COLOR);*/
+
+        HilbertCurve h = new HilbertCurve();
 
         for (int i = 0; i < iterations; i++) {
-            f.iterate();
+            h.iterate();
         }
 
-        for (Line l : f.getLines())
+        for (Line l : h.getLines())
             Renderer.addLine(l.getStart(), l.getEnd());
     }
 

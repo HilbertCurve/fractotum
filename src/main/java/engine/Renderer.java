@@ -1,6 +1,6 @@
 package engine;
 
-import fractal.Fractal;
+import fractal.Fractals;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static util.MyMath.rotate;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -131,7 +130,7 @@ public class Renderer {
         public static final List<Line> lines = new ArrayList<>();
         // 6 floats per vertex, 2 vertices per line
         private static final float[] vertexArray = new float[MAX_LINES * 6 * 2];
-        private static final Shader shader = AssetPool.getShader("src/main/resources/shaders/default.glsl");
+        private static final Shader shader = AssetPool.getShader("src/main/resources/shaders/test1.glsl");
 
         private static int vaoID;
         private static int vboID;
@@ -155,7 +154,7 @@ public class Renderer {
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 6 * Float.BYTES, 3 * Float.BYTES);
             glEnableVertexAttribArray(1);
 
-            glLineWidth(2.0f);
+            glLineWidth(1.0f);
         }
 
         public static void beginFrame() {
@@ -256,7 +255,7 @@ public class Renderer {
     }
 
     public static void addLine(Vector2f from, Vector2f to) {
-        addLine(from, to, Fractal.DEFAULT_COLOR);
+        addLine(from, to, Fractals.DEFAULT_COLOR);
     }
 
     public static Line getLine(int index) {

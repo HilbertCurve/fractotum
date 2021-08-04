@@ -15,7 +15,7 @@ uniform float uTime;
 void main()
 {
     vec4 v = uProjection * uView * vec4(aPos, 1.0, 1.0);
-    fColor = vec4(abs(v.xy), 0.3, 1.0) * abs(sin(uTime)/2 + 0.5);
+    fColor = vec4((v.x*v.x+v.y*v.y), 0.5f, 1 - (v.x*v.x+v.y*v.y), 1.0f);
 
     gl_Position = v;
 }
@@ -28,5 +28,5 @@ out vec4 color;
 
 void main()
 {
-    color = vec4(fColor);
+    color = vec4(fColor.rgb, 1.0f);
 }

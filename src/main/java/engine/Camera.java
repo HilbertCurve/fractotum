@@ -67,17 +67,17 @@ public class Camera {
 
     public void update() {
         if (isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
-            this.transform.position.x += getScrollY() * (float) (Math.pow(2, zoom));
+            this.transform.position.x += getScrollY() * (float) (Math.pow(2, zoom)) / 3;
         } else if (isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL)) {
             float oldZoom = this.getZoom();
-            this.zoomIn(getScrollY());
+            this.zoomIn(getScrollY()/3);
 
             // helps prevent flickering
             if (oldZoom != this.getZoom()) {
                 this.adjustProjection();
             }
         } else {
-            this.transform.position.y += getScrollY() * (float) (Math.pow(2, zoom));
+            this.transform.position.y += getScrollY() * (float) (Math.pow(2, zoom)) / 3;
         }
     }
 }

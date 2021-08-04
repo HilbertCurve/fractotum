@@ -1,6 +1,6 @@
 package engine;
 
-import fractal.Fractal;
+import fractal.Fractals;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -16,7 +16,7 @@ public class Circle {
     public Circle(Vector2f center, float radius) {
         this.radius = radius;
         this.center = center;
-        this.color = Fractal.DEFAULT_COLOR;
+        this.color = Fractals.DEFAULT_COLOR;
     }
 
     public Circle(Vector2f center, Vector2f point) {

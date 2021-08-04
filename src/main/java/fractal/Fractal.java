@@ -11,7 +11,6 @@ import java.util.List;
 import static util.MyMath.RADIANS_TO_DEGREES;
 
 public class Fractal {
-    public static final Vector3f DEFAULT_COLOR = new Vector3f(1.0f, 0.8f, 0.5f);
     List<Line> base;
     List<Line> lines;
     Vector3f color;
@@ -25,7 +24,7 @@ public class Fractal {
         this.base = new ArrayList<>(List.of(lines));
         this.lines = new ArrayList<>(List.of(lines));
         this.color = new Vector3f();
-        DEFAULT_COLOR.get(this.color);
+        Fractals.DEFAULT_COLOR.get(this.color);
         this.original = this.copy();
     }
 
@@ -33,7 +32,7 @@ public class Fractal {
         this.base = lines;
         this.lines = lines;
         this.color = new Vector3f();
-        DEFAULT_COLOR.get(this.color);
+        Fractals.DEFAULT_COLOR.get(this.color);
         this.original = this.copy();
     }
 
@@ -66,6 +65,13 @@ public class Fractal {
         return this.color;
     }
 
+    public void translateBy(Vector2f dPos) {
+        for (Line l : lines) {
+            l.getStart().add(dPos);
+            l.getEnd().add(dPos);
+        }
+    }
+
     public void translateTo(Vector2f pos) {
         Vector2f d = new Vector2f(pos).sub(this.lines.get(0).getStart());
 
@@ -79,6 +85,12 @@ public class Fractal {
         Vector2f fractalStart = this.lines.get(0).getStart();
         for (Line l : lines) {
             l.scale(fractalStart, f);
+        }
+    }
+
+    public void scale(Vector2f pos, float f) {
+        for (Line l : lines) {
+            l.scale(pos, f);
         }
     }
 
