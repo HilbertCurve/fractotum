@@ -1,35 +1,38 @@
 package engine;
 
 import fractal.Fractal;
-import fractal.Fractals;
-import fractal.HilbertCurve;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Scene {
     private Camera camera = new Camera(new Vector2f());
-    private Fractal f = Fractals.DEFAULT;
-    public List<Line> lines = f.getLines();
-    public int[] iterations = {3};
-    public int[] numPoints = {3};
-    public int[][] pointData = new int[numPoints[0]][2];
+    private Fractal f1 = new Fractal(
+            new Line(new Vector2f(-100, 0), new Vector2f(0, 0), new Vector3f(1.0f, 1.0f, 1.0f)),
+            new Line(new Vector2f(0, 0), new Vector2f(0, 100), new Vector3f(1.0f, 1.0f, 1.0f)));;
+    private Fractal f2 = new Fractal(
+            new Line(new Vector2f(-100, 0), new Vector2f(0, 0), new Vector3f(1.0f, 1.0f, 1.0f)),
+            new Line(new Vector2f(0, 0), new Vector2f(0, 100), new Vector3f(1.0f, 1.0f, 1.0f)));;
+    private Fractal f3 = new Fractal(
+            new Line(new Vector2f(-100, 0), new Vector2f(0, 0), new Vector3f(1.0f, 1.0f, 1.0f)),
+            new Line(new Vector2f(0, 0), new Vector2f(0, 100), new Vector3f(1.0f, 1.0f, 1.0f)));;
+    private final List<Fractal> fractals = new ArrayList<>();
 
     public void start() {
         loadResources();
 
-        for (int i = 0; i < lines.size(); i++) {
-            pointData[i][0] = (int) lines.get(i).getStart().x;
-            pointData[i][1] = (int) lines.get(i).getStart().y;
-            pointData[i+1][0] = (int) lines.get(i).getEnd().x;
-            pointData[i+1][1] = (int) lines.get(i).getEnd().y;
+        fractals.add(f1);
+        fractals.add(f2);
+        fractals.add(f3);
+
+        for (Fractal f : fractals) {
+            f.setIterations(3);
+            f.generateFractal();
         }
 
-        generateFractal(3);
-
         this.camera = new Camera(new Vector2f());
-
-        System.out.println("Scene started");
     }
 
     public void loadResources() {
@@ -41,41 +44,19 @@ public class Scene {
         camera.update();
     }
 
-    public void generateFractal(int iterations) {
+    public void updateFractal(Fractal f, int iterations) {
         Renderer.clearLines();
 
-        /*lines.clear();
+        f.setIterations(iterations);
 
-        Renderer.clearLines();
-
-        int[][] oldPointData = pointData;
-
-        pointData = new int[numPoints[0]][2];
-
-        System.arraycopy(
-                oldPointData, 0,
-                pointData, 0,
-                Math.min(pointData.length, oldPointData.length)
-        );
-
-        for (int i = 0; i < numPoints[0] - 1; i++) {
-            lines.add(new Line(
-                    new Vector2f(pointData[i][0], pointData[i][1]),
-                    new Vector2f(pointData[i+1][0], pointData[i+1][1])
-            ));
+        // TODO: this is a dum dum move
+        for (Fractal fractal : fractals) {
+            fractal.generateFractal();
         }
+    }
 
-        f = new Fractal(lines);
-        f.getColor().set(Fractals.DEFAULT_COLOR);*/
-
-        HilbertCurve h = new HilbertCurve();
-
-        for (int i = 0; i < iterations; i++) {
-            h.iterate();
-        }
-
-        for (Line l : h.getLines())
-            Renderer.addLine(l.getStart(), l.getEnd());
+    public List<Fractal> getFractals() {
+        return this.fractals;
     }
 
     public Camera getCamera() {

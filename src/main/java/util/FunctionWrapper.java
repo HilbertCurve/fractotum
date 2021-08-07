@@ -22,20 +22,18 @@ public class FunctionWrapper {
     }
 
     @Description("unfinished")
-    public static Method getInvoker(Runnable r) throws ClassNotFoundException, NoSuchMethodException {
-        Runnable finalR = r;
+    public static Method getInvoker() throws ClassNotFoundException, NoSuchMethodException {
         final String[] classInvoker = {""};
         final String[] methodInvoker = {""};
-        r = () -> {
-            finalR.run();
-            try {
-                throw new Exception();
-            } catch (Exception e) {
-                StackTraceElement[] ste = e.getStackTrace();
-                classInvoker[0] = ste[0].getClassName();
-                methodInvoker[0] = ste[0].getMethodName();
-            }
-        };
+
+        try {
+            throw new Exception();
+        } catch (Exception e) {
+            StackTraceElement[] ste = e.getStackTrace();
+            classInvoker[0] = ste[2].getClassName();
+            methodInvoker[0] = ste[2].getMethodName();
+        }
+
         Class<?> clazz = Class.forName(classInvoker[0]);
 
         return clazz.getDeclaredMethod(methodInvoker[0]);

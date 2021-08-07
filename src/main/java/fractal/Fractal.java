@@ -1,6 +1,7 @@
 package fractal;
 
 import engine.Line;
+import engine.Renderer;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import util.MyMath;
@@ -11,33 +12,115 @@ import java.util.List;
 import static util.MyMath.RADIANS_TO_DEGREES;
 
 public class Fractal {
-    List<Line> base;
-    List<Line> lines;
-    Vector3f color;
-    Fractal original;
+    protected List<Line> base;
+    protected List<Line> lines;
+    protected Vector3f color;
+    protected Fractal original;
+
+    // imgui stuff (that's why they're arrays)
+    protected boolean dirtyFlag;
+    protected int[][] pointData;
+    protected int[][] baseData;
+    protected int[] numPoints;
+    protected int[] iterations;
 
     public Fractal() {
+        this.base = new ArrayList<>();
+        this.lines = new ArrayList<>();
 
+        this.init();
     }
 
     public Fractal(Line... lines) {
         this.base = new ArrayList<>(List.of(lines));
         this.lines = new ArrayList<>(List.of(lines));
-        this.color = new Vector3f();
-        Fractals.DEFAULT_COLOR.get(this.color);
-        this.original = this.copy();
+
+        this.init();
     }
 
     public Fractal(List<Line> lines) {
         this.base = lines;
         this.lines = lines;
+
+        this.init();
+    }
+
+    private void init() {
         this.color = new Vector3f();
         Fractals.DEFAULT_COLOR.get(this.color);
-        this.original = this.copy();
+
+        this.dirtyFlag = true;
+        this.numPoints = new int[]{lines.size() + 1};
+        this.iterations = new int[]{3};
+
+        this.baseData = new int[this.base.size() + 1][2];
+
+        for (int i = 0; i < numPoints[0] - 1; i++) {
+            baseData[i][0] = (int) base.get(i).getStart().x;
+            baseData[i][1] = (int) base.get(i).getStart().y;
+            baseData[i + 1][0] = (int) base.get(i).getEnd().x;
+            baseData[i + 1][1] = (int) base.get(i).getEnd().y;
+        }
+    }
+
+    public Fractal getBase() {
+        return new Fractal(this.base);
     }
 
     public List<Line> getLines() {
         return lines;
+    }
+
+    public Vector3f getColor() {
+        return this.color;
+    }
+
+    public int[] getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = new int[]{iterations};
+    }
+
+    public int[][] getBaseData() {
+        if (dirtyFlag) {
+            int[][] oldData = baseData.clone();
+
+            baseData = new int[numPoints[0]][2];
+
+            System.arraycopy(oldData, 0, baseData, 0, Math.min(oldData.length, baseData.length));
+
+            base.clear();
+
+            for (int i = 0; i < numPoints[0] - 1; i++) {
+                base.add(new Line(
+                        new Vector2f(baseData[i][0], baseData[i][1]),
+                        new Vector2f(baseData[i+1][0], baseData[i+1][1])
+                ));
+            }
+        }
+
+        return baseData;
+    }
+
+    public int[][] getPointData() {
+        if (dirtyFlag) {
+            pointData = new int[lines.size() + 1][2];
+
+            for (int i = 0; i < lines.size(); i++) {
+                pointData[i][0] = (int) lines.get(i).getStart().x;
+                pointData[i][1] = (int) lines.get(i).getStart().y;
+                pointData[i + 1][0] = (int) lines.get(i).getEnd().x;
+                pointData[i + 1][1] = (int) lines.get(i).getEnd().y;
+            }
+        }
+
+        return pointData;
+    }
+
+    public int[] getNumPoints() {
+        return numPoints;
     }
 
     public Fractal copy() {
@@ -52,17 +135,8 @@ public class Fractal {
         }
 
         f.color = this.color;
-        System.out.println(this.color);
 
         return f;
-    }
-
-    public Fractal getBase() {
-        return new Fractal(this.base);
-    }
-
-    public Vector3f getColor() {
-        return this.color;
     }
 
     public void translateBy(Vector2f dPos) {
@@ -101,7 +175,35 @@ public class Fractal {
         }
     }
 
-    public void iterate() {
+    public void reset() {
+        this.lines.clear();
+
+        getBaseData();
+
+        if (numPoints[0] - 1 > this.base.size()) {
+            this.base.add(new Line(new Vector2f(0, 0), new Vector2f(0, 0)));
+        }
+
+        this.lines.addAll(this.base);
+
+        this.original = this.copy();
+    }
+
+    public void generateFractal() {
+        this.dirtyFlag = true;
+
+        this.reset();
+
+        for (int i = 0; i < iterations[0]; i++)
+            this.iterate();
+
+        for (Line l : this.lines)
+            Renderer.addLine(l.getStart(), l.getEnd());
+
+        this.dirtyFlag = false;
+    }
+
+    protected void iterate() {
         List<Fractal> toBeAdded = new ArrayList<>();
         final int l = this.lines.size();
 

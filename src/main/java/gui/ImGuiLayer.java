@@ -1,15 +1,15 @@
 package gui;
 
-import engine.KeyListener;
 import engine.Window;
+import fractal.Fractal;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiInputTextFlags;
-import imgui.flag.ImGuiKey;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.List;
 
 public class ImGuiLayer {
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
@@ -29,30 +29,33 @@ public class ImGuiLayer {
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
-        ImGui.begin("Fractotum");
+        List<Fractal> fractals = Window.getScene().getFractals();
 
-        int iters = Window.getScene().iterations[0];
+        for (int j = 0; j < fractals.size(); j++) {
+            Fractal f = fractals.get(j);
+            ImGui.begin("Fractal #" + j);
 
-        // Number of fractal-ization iterations
-        if (ImGui.sliderInt("Number of Iterations", Window.getScene().iterations, 0, 16)) {
-            iters = Window.getScene().iterations[0];
-            Window.getScene().generateFractal(iters);
-        }
-
-        // Number of points to draw
-        if (ImGui.sliderInt("Number of Vertices", Window.getScene().numPoints, 2, 8))
-            Window.getScene().generateFractal(iters);
-
-        ImGui.newLine();
-
-        // Points to change
-        for (int i = 0; i < Window.getScene().numPoints[0]; i++) {
-            if (ImGui.sliderInt2("Vertex #" + i + " Sliders", Window.getScene().pointData[i], -100, 100)) {
-                Window.getScene().generateFractal(iters);
+            // Number of fractal-ization iterations
+            if (ImGui.sliderInt("Number of Iterations", f.getIterations(), 0, 16)) {
+                Window.getScene().updateFractal(f, f.getIterations()[0]);
             }
-        }
 
-        ImGui.end();
+            // Number of points to draw
+            if (ImGui.sliderInt("Number of Vertices", f.getNumPoints(), 2, 8)) {
+                Window.getScene().updateFractal(f, f.getIterations()[0]);
+            }
+
+            ImGui.newLine();
+
+            // Points to change
+            for (int i = 0; i < f.getNumPoints()[0]; i++) {
+                if (ImGui.sliderInt2("Vertex #" + i + " Sliders", f.getBaseData()[i], -100, 100)) {
+                    Window.getScene().updateFractal(f, f.getIterations()[0]);
+                }
+            }
+
+            ImGui.end();
+        }
     }
 
     public void render() {
