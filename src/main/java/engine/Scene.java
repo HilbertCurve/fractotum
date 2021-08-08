@@ -1,6 +1,7 @@
 package engine;
 
 import fractal.Fractal;
+import fractal.HilbertCurve;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -23,9 +24,8 @@ public class Scene {
     public void start() {
         loadResources();
 
-        fractals.add(f1);
-        fractals.add(f2);
-        fractals.add(f3);
+        fractals.add(new HilbertCurve());
+
 
         for (Fractal f : fractals) {
             f.setIterations(3);

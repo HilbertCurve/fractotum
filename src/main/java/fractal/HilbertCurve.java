@@ -7,29 +7,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fractal.Fractals.DEFAULT_COLOR;
+import static gui.ImGuiLayer.MAX_VERTICES;
 
 public class HilbertCurve extends Fractal {
     public HilbertCurve() {
-        this.lines = new ArrayList<>();
-        this.lines.add(new Line(
+        this.base = new ArrayList<>();
+        this.base.add(new Line(
                 new Vector2f(-50, -50),
                 new Vector2f(-50, 50))
         );
 
-        this.lines.add(new Line(
+        this.base.add(new Line(
                 new Vector2f(-50, 50),
                 new Vector2f(50, 50))
         );
 
-        this.lines.add(new Line(
+        this.base.add(new Line(
                 new Vector2f(50, 50),
                 new Vector2f(50, -50))
         );
 
-        this.base = new ArrayList<>();
-        this.base.addAll(lines);
+        this.lines = new ArrayList<>();
+
+        this.base.forEach(line -> this.lines.add(new Line(new Vector2f(line.getStart()), new Vector2f(line.getEnd()))));
 
         this.color = DEFAULT_COLOR;
+    }
+
+    @Override
+    public void reset() {
+        this.base = new ArrayList<>();
+        this.base.add(new Line(
+                new Vector2f(-50, -50),
+                new Vector2f(-50, 50))
+        );
+
+        this.base.add(new Line(
+                new Vector2f(-50, 50),
+                new Vector2f(50, 50))
+        );
+
+        this.base.add(new Line(
+                new Vector2f(50, 50),
+                new Vector2f(50, -50))
+        );
+
+        this.lines = new ArrayList<>();
+
+        this.base.forEach(line -> this.lines.add(new Line(new Vector2f(line.getStart()), new Vector2f(line.getEnd()))));
+    }
+
+    @Override
+    public int[][] getBaseData() {
+        // we don't need any vertex data here.
+        return new int[MAX_VERTICES][2];
     }
 
     @Override
@@ -66,6 +97,7 @@ public class HilbertCurve extends Fractal {
 
             HilbertCurve h = this.copy();
             h.scale(new Vector2f(0, 0), 1/2f);
+
             switch (i) {
                 case 0: {
                     h.translateBy(new Vector2f(-50, -50));
@@ -101,7 +133,6 @@ public class HilbertCurve extends Fractal {
                         xOld = -l.getStart().x;
                         l.getStart().x = -l.getStart().y;
                         l.getStart().y = xOld;
-                        System.out.println(xOld);
                     }
                     break;
                 }

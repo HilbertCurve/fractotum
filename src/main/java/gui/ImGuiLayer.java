@@ -12,6 +12,9 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 public class ImGuiLayer {
+    public static final int MAX_ITERATIONS = 16;
+    public static final int MAX_VERTICES = 8;
+
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 
@@ -36,12 +39,12 @@ public class ImGuiLayer {
             ImGui.begin("Fractal #" + j);
 
             // Number of fractal-ization iterations
-            if (ImGui.sliderInt("Number of Iterations", f.getIterations(), 0, 16)) {
+            if (ImGui.sliderInt("Number of Iterations", f.getIterations(), 0, MAX_ITERATIONS)) {
                 Window.getScene().updateFractal(f, f.getIterations()[0]);
             }
 
             // Number of points to draw
-            if (ImGui.sliderInt("Number of Vertices", f.getNumPoints(), 2, 8)) {
+            if (ImGui.sliderInt("Number of Vertices", f.getNumPoints(), 2, MAX_VERTICES)) {
                 Window.getScene().updateFractal(f, f.getIterations()[0]);
             }
 
